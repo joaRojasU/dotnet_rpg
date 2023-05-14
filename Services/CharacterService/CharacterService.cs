@@ -11,11 +11,17 @@ namespace dotnet_rpg.Services.CharacterService
         new Character(),
         new Character{ Id= 1, Name = "Andrew" }
         };
+        private readonly IMapper _mapper;
+
+        public CharacterService(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
         public async Task<ServiceResponse<List<GetCharacterResponseDTO>>> AddCharacter(AddCharacterRequestDTO newCharacter)
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterResponseDTO>>();
-            characters.Add(newCharacter);
-            serviceResponse.Data = characters;
+            characters.Add(_mapper.Map<Character>(newCharacter));
+            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterResponseDTO>(c)).ToList();
 
             return serviceResponse;
         }
@@ -23,15 +29,15 @@ namespace dotnet_rpg.Services.CharacterService
         public async Task<ServiceResponse<List<GetCharacterResponseDTO>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterResponseDTO>>();
-            serviceResponse.Data = characters;
+            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterResponseDTO>(c)).ToList();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetCharacterResponseDTO>> GetCharacterById(int id)
         { 
-            var serviceResponse = new ServiceResponse<Character>();
+            var serviceResponse = new ServiceResponse<GetCharacterResponseDTO>();
             var character = characters.FirstOrDefault(c => c.Id == id);
-            serviceResponse.Data = character;
+            serviceResponse.Data = _mapper.Map<GetCharacterResponseDTO>(character);
             return serviceResponse;
             // OBSOLETO
             /* if (character is not null)
