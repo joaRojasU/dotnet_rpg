@@ -11,10 +11,13 @@ namespace dotnet_rpg.Services.CharacterService
         new Character(),
         new Character{ Id= 1, Name = "Andrew" }
         };
-        private readonly IMapper _mapper;
 
-        public CharacterService(IMapper mapper)
+        private readonly IMapper _mapper;
+        private readonly DataContext _context;
+
+        public CharacterService(IMapper mapper, DataContext context)
         {
+            _context = context;
             _mapper = mapper;
         }
         public async Task<ServiceResponse<List<GetCharacterResponseDTO>>> AddCharacter(AddCharacterRequestDTO newCharacter)
@@ -52,15 +55,16 @@ namespace dotnet_rpg.Services.CharacterService
         public async Task<ServiceResponse<List<GetCharacterResponseDTO>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterResponseDTO>>();
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterResponseDTO>(c)).ToList();
+            var dbCharacters = await _context.Characters.ToListAsync();
+            serviceResponse.Data = dbCharacters.Select(c => _mapper.Map<GetCharacterResponseDTO>(c)).ToList();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetCharacterResponseDTO>> GetCharacterById(int id)
         { 
             var serviceResponse = new ServiceResponse<GetCharacterResponseDTO>();
-            var character = characters.FirstOrDefault(c => c.Id == id);
-            serviceResponse.Data = _mapper.Map<GetCharacterResponseDTO>(character);
+            var dbCharacter = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+            serviceResponse.Data = _mapper.Map<GetCharacterResponseDTO>(dbCharacter);
             return serviceResponse;
             // OBSOLETO
             /* if (character is not null)
