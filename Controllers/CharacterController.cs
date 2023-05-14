@@ -19,7 +19,7 @@ namespace dotnet_rpg.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<ServiceResponse<List<Character>>>> Get()
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterResponseDTO>>>> Get()
         {
             return Ok(await _characterService.GetAllCharacters());
         }
@@ -31,7 +31,7 @@ namespace dotnet_rpg.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<Character>>>> AddCharacter(Character newChar)
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterResponseDTO>>>> AddCharacter(AddCharacterRequestDTO newChar)
         {
             return Ok(await _characterService.AddCharacter(newChar));
         }
